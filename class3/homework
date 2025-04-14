@@ -1,0 +1,36 @@
+import math
+import cv2
+
+# --------
+
+n=8 
+
+# -------
+
+image = cv2.imread("class2/snowy.jpg")
+
+
+def polygon_coordinates(side_count, radius=50):
+    coords = []
+    for i in range(side_count):
+        angle = 2 * math.pi * i / side_count
+        x = int(radius * math.cos(angle))+100
+        y = int(radius * math.sin(angle))+100
+        coords.append((x, y))
+    return coords
+
+
+coordinates = polygon_coordinates(n)
+coordinates.append(coordinates[0])
+
+print(coordinates)
+
+for i in range(len(coordinates)-1):
+    image = cv2.line(image,(coordinates[i]),(coordinates[i+1]), (0,255,0), 3)
+
+cv2.imshow("image",image)
+cv2.waitKey(0)
+cv2.destroyAllWindows
+
+
+
