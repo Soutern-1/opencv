@@ -34,8 +34,11 @@ for image in images:
 
 print(sum_x,sum_y)
 
+
 image_width = int(sum_x / len(images))
 image_height = int(sum_y / len(images))
+
+print(image_width, image_height)
 
 # =-------------------------
 
@@ -43,20 +46,34 @@ resized_images = []
 
 for image in images:
     resized_images.append(cv2.resize(image,(image_width,image_height)))
+        
+print("resizing complete")
 
 # -------------------------------
+# for image in resized_images:
+#     cv2.imshow('image',image)
+#     cv2.waitKey(0)
+
 
 
 def video_generator():
     media_file = '/Users/sutirthrajesh/Documents/vs/openCV/class6/video.avi'
-    video_writer = cv2.VideoWriter(media_file, 'XVID' ,framerate,(image_height,image_width),)
+    video_writer = cv2.VideoWriter("video.mp4", cv2.VideoWriter_fourcc(*'mp4v') ,framerate,(image_height,image_width))
     for image in resized_images:
         video_writer.write(image)
-        cv2.imshow(image)
-    cv2.destroyAllWindows()
+        # cv2.imshow('image',image)
+
+    for image in resized_images:
+        cv2.imshow('image',image)
+        cv2.waitKey(1000)
+
+        # if cv2.waitKey(1) == 27:
+        #     cv2.waitKey(10)
+            # break
+
     video_writer.release()
+    cv2.destroyAllWindows()
 
-
-# video_generator()
+video_generator()
 
     
