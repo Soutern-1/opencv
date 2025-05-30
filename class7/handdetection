@@ -1,0 +1,58 @@
+import cv2
+import mediapipe as mp
+
+# Initialising solution
+hand_detection = mp.solutions.hands
+
+# Creating object
+hand_det_obj = hand_detection.Hands(min_detection_confidence = 0.2, min_tracking_confidence = 0.7)
+
+# Intiialising drawing utils
+
+mp_drawing = mp.solutions.drawing_utils 
+
+webcam = cv2.VideoCapture(0)
+
+def count_fingers(landpoints): 
+    thumbtip = landpoints.landmark[4]
+    pointtip = landpoints.landmark[8]
+    middletip = landpoints.landmark[12]
+    ringtip = landpoints.landmark[16]
+    pinkytip = landpoints.landmark[20]
+
+    open_finger_count = 0
+    if thumbtip.x < landpoints.landmark[2].x:
+        open_finger_count +=1
+    if pointtip.y < landpoints.landmark[5].y:
+        open_finger_count +=1
+    if middletip.y < landpoints.landmark[10].y:
+        open_finger_count+=1
+    if ringtip.y < landpoints.landmark[14].y:
+        open_finger_count+=1
+    if pinkytip.y < landpoints.landmark[18].y:
+        open_finger_count+=1
+
+    return open_finger_count
+
+while True:
+    status,frame = webcam.read()
+    if not status:
+        break
+    else:
+        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        hand_points = hand_det_obj.process(rgb_frame)
+
+        if hand_points.multi_hand_landmarks:
+            for landmark in hand_points.multi_hand_landmarks:
+                mp_drawing.draw_landmarks(frame, landmark, hand_detection.HAND_CONNECTIONS)
+
+                fingers_count = count_fingers(landmark)
+                cv2.putText(frame, f"Fingers raised: {fingers_count}", (100,100),cv2.FONT_HERSHEY_PLAIN, 3,(0,0,0))
+
+        cv2.imshow('image', frame)
+
+        if cv2.waitKey(1) & 0xff==27:
+            break
+    
+cv2.waitKey(0)
+cv2.destroyAllWindows
